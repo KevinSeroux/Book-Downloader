@@ -20,11 +20,12 @@ def download_pdf(out_pdf, url_pattern, out_tmp_dir):
             pdf_pages.append(pdf_page)
             i += 1
     except HTTPError:
-        pass
+        print(f"Impossible de télécharger la page {i}. " +
+              "On suppose que la précédente était la dernière.")
 
     # Merges pages
     merger = PdfFileMerger()
-    print("Merging all pages into one PDF\n")
+    print("\nMerging all pages into one PDF\n")
     for pdf_page in pdf_pages:
         merger.append(pdf_page)
     merger.write(out_pdf)
@@ -52,7 +53,7 @@ def download_pdf_page(out_dir, url_pattern, i):
 parser = ArgumentParser(description='Télécharger un livre')
 parser.add_argument('output_file', help="""Fichier PDF de sortie""")
 parser.add_argument('url_pattern', help="""URL exemple contenant les pages à
-        récupérer.  La chaîne de caractère doit contenir {} pour compléter le
+        récupérer. La chaîne de caractère doit contenir {} pour compléter le
         numéro de page. Exemple : https://www.site.com/page{}.svgz""")
 args = parser.parse_args()
 
