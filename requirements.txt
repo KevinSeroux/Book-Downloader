@@ -1,0 +1,4 @@
+wget
+svglib
+reportlab
+PyPDF2
