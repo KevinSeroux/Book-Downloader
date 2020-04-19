@@ -6,8 +6,7 @@ import wget
 from argparse import ArgumentParser
 from tempfile import TemporaryDirectory
 from urllib.error import HTTPError
-from svglib.svglib import svg2rlg
-from reportlab.graphics.renderPDF import drawToFile
+from cairosvg import svg2pdf
 from PyPDF2 import PdfFileMerger
 
 
@@ -25,6 +24,7 @@ def download_pdf(out_pdf, url_pattern, out_tmp_dir):
 
     # Merges pages
     merger = PdfFileMerger()
+    print("Merging all pages into one PDF\n")
     for pdf_page in pdf_pages:
         merger.append(pdf_page)
     merger.write(out_pdf)
@@ -33,17 +33,19 @@ def download_pdf(out_pdf, url_pattern, out_tmp_dir):
 
 def download_pdf_page(out_dir, url_pattern, i):
     page_url = url_pattern.format(i)
-    out_file_prefix = f"{out_dir}/{i}"
-    out_file_svg = f"{out_file_prefix}.svg"
-    out_file_pdf = f"{out_file_prefix}.pdf"
+    page_prefix = f"{out_dir}/{i}"
+    page_svg = f"{page_prefix}.svg"
+    page_pdf = f"{page_prefix}.pdf"
 
     # Download
-    wget.download(page_url, out=out_file_svg)
+    print(f"Downloading page {i}")
+    wget.download(page_url, out=page_svg)
 
     # Convert SVG -> PDF
-    drawToFile(svg2rlg(out_file_svg), out_file_pdf)
+    print(f"\nConverting page {i} to PDF\n")
+    svg2pdf(url=page_svg, write_to=page_pdf)
 
-    return out_file_pdf
+    return page_pdf
 
 
 # CLI options
